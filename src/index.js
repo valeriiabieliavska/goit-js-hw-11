@@ -9,11 +9,13 @@ const searchInput = document.querySelector('.search-input');
 const loadMoreBtn = document.querySelector('.load-more');
 
 let page = 1;
+loadMoreBtn.style.display = 'none';
 
 let lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
+
 
 form.addEventListener('submit', event => {
   event.preventDefault();
@@ -22,9 +24,7 @@ form.addEventListener('submit', event => {
   if (trim !== '') {
     fetchImages(trim, page).then(data => {
       if (data.hits.length === 0) {
-        Notiflix.Notify.failure(
-          `Sorry, there are no images matching your search query. Please try again.`
-        );
+        invalidQuery();
         return;
       }
       renderImg(data.hits);
@@ -36,10 +36,6 @@ form.addEventListener('submit', event => {
   }
 });
 
-// кнопка load more...
-
-loadMoreBtn.style.display = 'none';
-
 loadMoreBtn.addEventListener('click', () => {
   page += 1;
   const trim = searchInput.value.trim();
@@ -48,16 +44,24 @@ loadMoreBtn.addEventListener('click', () => {
       ? (loadMoreBtn.style.display = 'block')
       : (loadMoreBtn.style.display = 'none');
     if (data.hits.length === 0) {
-      Notiflix.Notify.failure(
-        `Sorry, there are no images matching your search query. Please try again.`
-      );
+      invalidQuery();
     } else {
       renderImg(data.hits);
-      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+      loadMoreBtn.style.display = 'none';
     }
     smoothScroll();
   });
 });
+
+function invalidQuery() {
+  Notiflix.Notify.failure(
+    'Sorry, there are no images matching your search query. Please try again.'
+  );
+  loadMoreBtn.style.display = 'none';
+}
 
 // плавне прокручування
 
@@ -110,7 +114,7 @@ function cleanGallery() {
 // Метод Math.ceil() - округление вверх. Округляет аргумент до ближайшего большего целого.
 //  Метод trim() удаляет пробельные символы с начала и конца строки.
 
-// плавний скрол 
+// плавний скрол
 // const { height: cardHeight } = document
 //   .querySelector(".gallery")
 //   .firstElementChild.getBoundingClientRect();
@@ -119,6 +123,25 @@ function cleanGallery() {
 //   top: cardHeight * 2,
 //   behavior: "smooth",
 // });
+
+// function onLoadMoreBtn() {
+//   page += 1
+//   fetchImages()
+//     .then(({ data }) => {
+//       renderGallery(data.hits)
+
+//       const totalPages = Math.ceil(data.totalHits / 40)
+
+//       if (page > totalPages) {
+
+//          Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.")
+//          refs.LoadMoreBtn.classList.add('is-hidden')
+//       }
+//     })
+//     .catch(error => console.log(error))
+// }
+
+
 
 
 
