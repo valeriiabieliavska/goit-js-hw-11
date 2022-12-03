@@ -16,7 +16,6 @@ let lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
-
 form.addEventListener('submit', event => {
   event.preventDefault();
   cleanGallery();
@@ -40,9 +39,11 @@ loadMoreBtn.addEventListener('click', () => {
   page += 1;
   const trim = searchInput.value.trim();
   fetchImages(trim, page).then(data => {
-    page < Math.ceil(data.totalHits / 40)
-      ? (loadMoreBtn.style.display = 'block')
-      : (loadMoreBtn.style.display = 'none');
+    page > Math.ceil(data.totalHits / 40)
+      ? Notiflix.Notify.info(
+          "We're sorry, but you've reached the end of search results."
+        )((loadMoreBtn.style.display = 'none'))
+      : (loadMoreBtn.style.display = 'block');
     if (data.hits.length === 0) {
       invalidQuery();
     } else {
@@ -140,9 +141,3 @@ function cleanGallery() {
 //     })
 //     .catch(error => console.log(error))
 // }
-
-
-
-
-
-
